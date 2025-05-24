@@ -115,18 +115,11 @@ The mod includes configurable settings in the script:
 
 ## Multiplayer
 
-Note: This mod works best in single player.
-
-- All players should have the mod installed
-- Host-spawned items have priority
-- Host can spawn items for friends to use
-- Some features may not sync properly between players
+- Stay tuned!
 
 ## Known Issues
 
-- Placing spawned items into hotbar slots may override mod properties. Simply spawn new items to restore functionality.
-- The game may crash when exiting via in-game menu after using mod features. This is cosmetic and doesn't affect save data.
-- Speed boost effects may persist briefly after disabling
+- Stay tuned!
 
 ## Troubleshooting
 
