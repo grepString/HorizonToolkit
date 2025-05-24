@@ -2,6 +2,8 @@
 
 A fun mod suite that adds multiple gameplay enhancements including painting tools, weapons, player abilities, and item spawning.
 
+## Mod Demo
+
 [![HorizonToolkit Mod | Drive Beyond Horizons](https://img.youtube.com/vi/D33cNViTDfM/0.jpg)](https://www.youtube.com/watch?v=D33cNViTDfM)
 
 ## Features
