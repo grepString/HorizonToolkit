@@ -1,6 +1,6 @@
 # HorizonToolkit for Drive Beyond Horizons
 
-A comprehensive modding toolkit that adds multiple gameplay enhancements including painting tools, weapons, player abilities, and item spawning.
+A fun mod suite that adds multiple gameplay enhancements including painting tools, weapons, player abilities, and item spawning.
 
 [![HorizonToolkit Mod | Drive Beyond Horizons](https://img.youtube.com/vi/D33cNViTDfM/0.jpg)](https://www.youtube.com/watch?v=D33cNViTDfM)
 
