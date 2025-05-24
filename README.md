@@ -103,7 +103,7 @@ https://grepstring.github.io/SuperSprayPaintMod/
 
 ## Tutorial Video
 
-[![How to Install UE4SS + Mod | Drive Beyond Horizons](https://img.youtube.com/vi/D33cNViTDfM/0.jpg)](https://www.youtube.com/watch?v=D33cNViTDfM)
+[![How to Install UE4SS + Mod | Drive Beyond Horizons](https://img.youtube.com/vi/pWbKwe9b0e0/0.jpg)](https://www.youtube.com/watch?v=pWbKwe9b0e0)
 
 ## Installation Guide
 
