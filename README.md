@@ -2,7 +2,7 @@
 
 A comprehensive modding toolkit that adds multiple gameplay enhancements including painting tools, weapons, player abilities, and item spawning.
 
-<img src="screenshot.gif" alt="Screenshot" width="600">
+[![HorizonToolkit Mod | Drive Beyond Horizons](https://img.youtube.com/vi/D33cNViTDfM/0.jpg)](https://www.youtube.com/watch?v=D33cNViTDfM)
 
 ## Features
 
@@ -60,10 +60,9 @@ A comprehensive modding toolkit that adds multiple gameplay enhancements includi
 
 ### Available Colors
 
-The mod includes an extensive color palette:
-- **Basic Colors**: Blue, Red, Green, Yellow, Orange, Purple, Pink, Black, White, Gold, Silver, Cyan
-- **F1 Racing Team Colors**: All major F1 team livery colors including Ferrari, Red Bull, Mercedes, etc.
-- **Vintage Military Colors**: Historical military paint schemes from various nations
+View existing colors and cleaner instructions:
+
+https://grepstring.github.io/SuperSprayPaintMod/
 
 ### Available Sheens
 
@@ -135,33 +134,6 @@ If you encounter issues:
 3. If items spawn in weird positions:
    - Make sure you're standing on relatively flat ground. Gas Stations and Repair Shops have the best flat ground.
 4. If speed boosts don't work properly, try toggling them off and on again
-
-## Features Overview
-
-### Paint Mode Features
-- ✅ Extensive color palette with 50+ colors
-- ✅ Matte and metallic sheen options
-- ✅ Infinite paint quantity
-- ✅ Rust removal and polishing tools
-
-### Weapon Mode Features  
-- ✅ AK weapon with infinite ammo
-- ✅ Bazooka launcher
-- ✅ Instant spawn system
-
-### Player Mode Features
-- ✅ Configurable speed multipliers
-- ✅ Enhanced jump abilities
-- ✅ Real-time toggle system
-- ✅ Movement enhancement compatibility
-
-### Item Mode Features
-- ✅ Food and drink spawning
-- ✅ Instant availability
-
-## Credits
-
-Special thanks to the UE4SS and Drive Beyond Horizons community for making modding possible.
 
 ## License
 HorizonToolkit © 2025 is licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nd/4.0/)
