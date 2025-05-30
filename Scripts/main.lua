@@ -89,8 +89,6 @@ local Colors = {
     { name = "NATO Gelboliv", color = { R = 0.325, G = 0.310, B = 0.235, A = 1 } }
 }
 
--- MENU SYSTEM
-
 local MenuMode = {
     PAINT = 1,
     WEAPON = 2,
@@ -116,8 +114,6 @@ local playerEnhancementsActive = {
     jumpBoost = false
 }
 
--- UTILITY FUNCTIONS
-
 local function ShowMessage(message)
     if not CONFIG.ENABLE_CHAT_MESSAGES then return end
     
@@ -137,6 +133,32 @@ local function ShowMessage(message)
             pc:ServerSendChatMessage(chatStruct)
         end
     end)
+end
+
+local localAppDataPath = os.getenv("LOCALAPPDATA")
+local modLogFilePath = nil
+
+if localAppDataPath then
+    modLogFilePath = localAppDataPath .. "\\DriveBeyondHorizons\\Saved\\Logs\\HorizonToolkit_Mod.log"
+    print("[HorizonToolkit] Mod log path: " .. modLogFilePath)
+else
+    print("[HorizonToolkit] ERROR: Could not find LOCALAPPDATA environment variable.")
+end
+
+local function LogToModFile(message)
+    if not modLogFilePath then
+        return
+    end
+
+    local file, err = io.open(modLogFilePath, "a")
+    if file then
+        local timestamp = os.date("[%Y.%m.%d-%H.%M.%S]")
+        local fileMessage = timestamp .. " [HorizonToolkit] " .. message .. "\n"
+        file:write(fileMessage)
+        file:close()
+    else
+        print("[HorizonToolkit] Could not create mod log file: " .. (err or "unknown error"))
+    end
 end
 
 local function HasProperty(obj, propName)
@@ -170,6 +192,50 @@ local function DestroyAllSpawnedTools()
     print("[HorizonToolkit] All spawned tools destroyed.")
 end
 
+local function ConfigureSpawnedObject(actor)
+    if not actor or not actor:IsValid() then return end
+
+    pcall(function()
+        if HasProperty(actor, "bEnableDebugLogging") then
+            actor.bEnableDebugLogging = false
+        end
+        if HasProperty(actor, "bLogRotationChanges") then
+            actor.bLogRotationChanges = false
+        end
+        if HasProperty(actor, "bLogStateChanges") then
+            actor.bLogStateChanges = false
+        end
+        
+        if HasProperty(actor, "RootComponent") and actor.RootComponent then
+            local rootComp = actor.RootComponent
+            pcall(function()
+                if HasProperty(rootComp, "bNotifyRigidBodyCollision") then
+                    rootComp.bNotifyRigidBodyCollision = false
+                end
+                if HasProperty(rootComp, "bGenerateOverlapEvents") then
+                end
+            end)
+        end
+        
+        if HasProperty(actor, "PrimaryActorTick") and actor.PrimaryActorTick then
+            pcall(function()
+                local tick = actor.PrimaryActorTick
+                if HasProperty(tick, "TickInterval") then
+                    tick.TickInterval = 0.1
+                end
+                if HasProperty(tick, "bCanEverTick") then
+                    if HasProperty(actor, "GetClass") then
+                        local className = tostring(actor:GetClass())
+                        if string.find(className, "Brush") or string.find(className, "Polish") then
+                            tick.bCanEverTick = false
+                        end
+                    end
+                end
+            end)
+        end
+    end)
+end
+
 local function SpawnTool(toolPath, toolName, callback)
     local pc = FindFirstOf("PlayerController")
     if not pc or not pc.Pawn then return nil end
@@ -196,6 +262,8 @@ local function SpawnTool(toolPath, toolName, callback)
     end)
 
     if success and result then
+        ConfigureSpawnedObject(result)
+        
         table.insert(spawnedTools, result)
         if callback then
             callback(result)
@@ -206,8 +274,6 @@ local function SpawnTool(toolPath, toolName, callback)
         return nil
     end
 end
-
--- PAINT SYSTEM
 
 local function SetInfiniteToolProperties(tool)
     if not tool or not tool:IsValid() then return end
@@ -269,6 +335,12 @@ function SpawnPaintCan()
         end
     end
 
+    if not Colors or #Colors == 0 or currentColorIndex < 1 or currentColorIndex > #Colors then
+        ShowMessage("Error: Cannot spawn paint - invalid color configuration")
+        currentColorIndex = 1 
+        return nil
+    end
+
     local result = SpawnTool(ASSET_PATHS.PAINT_BOMB, "PaintBomb", function(paintBomb)
         currentPaintBomb = paintBomb
         SetPaintBombProperties(currentPaintBomb, Colors[currentColorIndex], isMetallic)
@@ -322,14 +394,29 @@ end
 
 local function UpdatePaintCan()
     if currentPaintBomb and currentPaintBomb:IsValid() then
+        if not Colors or #Colors == 0 or currentColorIndex < 1 or currentColorIndex > #Colors then
+            ShowMessage("Warning: Cannot update paint - invalid color configuration")
+            currentColorIndex = 1
+            return
+        end
         SetPaintBombProperties(currentPaintBomb, Colors[currentColorIndex], isMetallic)
     end
 end
 
 function CycleColor(direction)
+    if not Colors or #Colors == 0 then
+        ShowMessage("Error: No colors available")
+        return
+    end
+    
     currentColorIndex = currentColorIndex + direction
     if currentColorIndex > #Colors then currentColorIndex = 1 end
     if currentColorIndex < 1 then currentColorIndex = #Colors end
+
+    if currentColorIndex < 1 or currentColorIndex > #Colors then
+        currentColorIndex = 1
+        ShowMessage("Warning: Color index reset to default")
+    end
 
     local colorName = Colors[currentColorIndex].name
     local sheenType = isMetallic and "Metallic" or "Matte"
@@ -340,6 +427,11 @@ function CycleColor(direction)
 end
 
 function ToggleSheen()
+    if not Colors or #Colors == 0 or currentColorIndex < 1 or currentColorIndex > #Colors then
+        ShowMessage("Error: Invalid color configuration")
+        return
+    end
+    
     isMetallic = not isMetallic
 
     local colorName = Colors[currentColorIndex].name
@@ -349,8 +441,6 @@ function ToggleSheen()
     ShowMessage(message)
     UpdatePaintCan()
 end
-
--- WEAPON SYSTEM
 
 local function SetInfiniteAmmoProperties(weapon)
     if not weapon or not weapon:IsValid() then return end
@@ -399,8 +489,6 @@ function SpawnBazooka()
     end)
     return result
 end
-
--- PLAYER ENHANCEMENT SYSTEM
 
 local function ApplyForwardVelocity(speed)
     local pc = FindFirstOf("PlayerController")
@@ -541,10 +629,7 @@ end
 
 local function ApplyPlayerJumpBoost(enable)
     local pc = FindFirstOf("PlayerController")
-    if not pc or not pc.Pawn then 
-        ShowMessage("Player not found")
-        return 
-    end
+    if not pc or not pc.Pawn then return end
     
     local player = pc.Pawn
     local movementComponent = nil
@@ -564,7 +649,7 @@ local function ApplyPlayerJumpBoost(enable)
                     movementComponent.JumpZVelocity = movementComponent.JumpZVelocity * CONFIG.JUMP_MULTIPLIER
                 end
             else
-                if HasProperty(movementComponent, "JumpZVelocity") then
+                if HasProperty(movementComponent, "JumpZVelocity") and CONFIG.JUMP_MULTIPLIER > 0 then
                     movementComponent.JumpZVelocity = movementComponent.JumpZVelocity / CONFIG.JUMP_MULTIPLIER
                 end
             end
@@ -778,8 +863,6 @@ local function TogglePlayerJumpBoost()
     end
 end
 
--- MENU NAVIGATION
-
 local function CycleMode()
     currentMode = currentMode + 1
     if currentMode > MenuMode.ITEM then currentMode = MenuMode.PAINT end
@@ -796,8 +879,6 @@ local function CycleMode()
         ShowMessage("F5=Food, F6=SodaCan")
     end
 end
-
--- ACTION HANDLERS
 
 local function HandleF5()
     if currentMode == MenuMode.PAINT then
@@ -859,7 +940,7 @@ RegisterKeyBind(Key.OEM_FOUR, function() HandleLeftBracket(); return false end)
 RegisterKeyBind(Key.OEM_SIX, function() HandleRightBracket(); return false end)
 RegisterKeyBind(Key.OEM_FIVE, function() HandleBackslash(); return false end)
 
--- INITIALIZATION & CLEANUP
+LogToModFile("UE4SS and HorizonToolkit loaded successfully!")
 
 function OnModuleUnload()
     ShowMessage("HorizonToolkit unloading...")
